@@ -2,4 +2,5 @@
 ```
 nasm -felf64 fetchasm.asm -o fetchasm.o && ld fetchasm.o -o fetchasm && ./fetchasm
 ```
-written with my own device in mind, may not work for you as the buffer offsets are hard coded
+Written in 64 bit NASM Linux Assembly, may have some issues on your device because buffer offsets are hard coded.
+May expand more in future.
