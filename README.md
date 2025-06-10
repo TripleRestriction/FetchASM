@@ -15,6 +15,6 @@ Sample:
 Todo:
 1) Use something like getline() instead of manual offsets.
 2) Prettify.
-3) ASCII art support.
+3) ASCII art support. ☑️
 4) More info.
 5) Perhaps show mem in GB instead of KB.
