@@ -3,13 +3,14 @@ section .bss
   uname_buf resb 256
   buffer resb 124
   buffer2 resb 100
+  ascii_buf resb 1024
 section .data
-  sep db "-> ", 0 ; 10 means new line and db means define byte, 0 means null terminator 
+  sep db "|-> ", 0 ; 10 means new line and db means define byte, 0 means null terminator 
   sep_len equ $ - sep ; subtracts current pos from pos of msg to obtain length of string
 
   ascii_art db "ascii.txt", 0
   
-  dist db 0x1b, "[34mDistro ", 0x1b, "[0m", 0
+  dist db 0x1b, "[34mKernel ", 0x1b, "[0m", 0
   dist_len equ $ - dist
 
   lines db 0x1b, "[34m-----------------------------------------------------------------------------------", 0x1b, "[0m", 0
@@ -30,9 +31,29 @@ section .text
 global _start
 
 _start:
+;;;;;print ascii art;;;;;;;;;;;;;;;;;;;;;;;;;
+  mov rax, 2 
+  mov rdi, ascii_art
+  xor rsi, rsi
+  xor rdx, rdx
+  syscall
+  ;; reading the opened file
+  mov rdi, rax ;; return value stored in rax probably idk it just works
+  xor rax, rax
+  mov rsi, ascii_buf
+  mov rdx, 1024
+  syscall
+
+  ;; printing the file
+  mov rdx, rax
+  mov rax, 1 
+  mov rdi, 1 
+  mov rsi, ascii_buf
+  syscall
+  
   call print_lines
   call print_newline
-
+;;;;;;;;;;;;;;;kernel;;;;;;;;;;;;;;;;;;;;;;;;;;
   call print_arrow 
 
   ;; print info name mov rax, 1
@@ -50,7 +71,7 @@ _start:
   mov rax, 1; sys call for write
   mov rdi, 1; choose stdout descriptor 
   mov rsi, uname_buf; put what to print in rsi
-  mov rdx, 256; put length in rdx
+  mov rdx, 250; put length in rdx
   syscall
 
   call print_newline
@@ -70,7 +91,7 @@ _start:
   syscall
   ;; reading the opened file
   mov rdi, rax ;; return value stored in rax probably idk it just works
-  mov rax, 0
+  xor rax, rax
   mov rsi, buffer
   mov rdx, 95
   syscall
@@ -95,13 +116,13 @@ _start:
   ;; opening the file
   mov rax, 2 
   mov rdi, mem_proc
-  mov rsi, 0
-  mov rdx, 0
+  xor rsi, rsi
+  xor rdx, rdx
   syscall
 
   ;; reading the opened file
   mov rdi, rax ;; return value stored in rax probably idk it just works
-  mov rax, 0
+  xor rax, rax
   mov rsi, buffer2
   mov rdx, 28
   syscall
