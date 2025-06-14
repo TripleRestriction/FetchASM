@@ -1,4 +1,4 @@
-# FetchASM
+# FetchASM - WORK IN PROGRESS
 ```
 chmod +x build.sh && ./build.sh
 ```
