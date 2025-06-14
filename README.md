@@ -1,6 +1,6 @@
 # FetchASM
 ```
-nasm -felf64 fetchasm.asm -o fetchasm.o && ld fetchasm.o -o fetchasm && ./fetchasm
+chmod +x build.sh && ./build.sh
 ```
 Written in 64 bit NASM Linux Assembly, may have some issues on your device because buffer offsets are hard coded.
 Will expand more in future.
