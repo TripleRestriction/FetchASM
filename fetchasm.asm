@@ -2,7 +2,7 @@
 section .bss
   uname_buf resb 256
   buffer resb 124
-  buffer2 resb 100
+  mem_buf resb 100
   ascii_buf resb 1024
 section .data
   sep db "|-> ", 0 ; 10 means new line and db means define byte, 0 means null terminator 
@@ -28,9 +28,10 @@ section .data
   newline_len equ $ - newline
 
 section .text
-global _start
+global main
+extern strchr
 
-_start:
+main:
 ;;;;;print ascii art;;;;;;;;;;;;;;;;;;;;;;;;;
   mov rax, 2 
   mov rdi, ascii_art
@@ -123,17 +124,23 @@ _start:
   ;; reading the opened file
   mov rdi, rax ;; return value stored in rax probably idk it just works
   xor rax, rax
-  mov rsi, buffer2
-  mov rdx, 28
+  mov rsi, mem_buf 
+  mov rdx, 100
   syscall
+;;;;;;;;;;;;;;;;;;;;;some crazy magic starts here!;;;;;;;;
+  mov rdi, mem_buf
+  mov al, 10 ; add  newline
+  mov rcx, 100
+  repne scasb
 
-  ;; printing the file
-  mov rdx, rax
-  mov rax, 1 
-  mov rdi, 1 
-  mov rsi, buffer2 + 17
+  mov rdx, rdi
+  sub rdx, mem_buf
+
+  mov rax, 1 ; sys write
+  mov rdi, 1 ; stdout
+  mov rsi, mem_buf
   syscall
-
+;;;;;;;;;;;;;;;;;;;;;;;crazy magic ends here!;;;;;;;;;;;;;;;;
   call print_lines
 
   call print_newline
