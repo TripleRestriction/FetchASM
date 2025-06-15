@@ -4,6 +4,7 @@ section .bss
   buffer resb 124
   mem_buf resb 100
   ascii_buf resb 1024
+  bat_buf resb 2
 section .data
   sep db "|-> ", 0 ; 10 means new line and db means define byte, 0 means null terminator 
   sep_len equ $ - sep ; subtracts current pos from pos of msg to obtain length of string
@@ -12,6 +13,12 @@ section .data
   
   dist db 0x1b, "[34mKernel ", 0x1b, "[0m", 0
   dist_len equ $ - dist
+
+  bat db 0x1b, "[34mBAT ", 0x1b, "[0m", 0
+  bat_len equ $ - bat
+  percent db "%", 0
+  percent_len equ $ - percent; subtracts current pos from pos of msg to obtain length of string
+  bat_proc db "/sys/class/power_supply/BAT0/capacity", 0
 
   lines db 0x1b, "[34m-----------------------------------------------------------------------------------", 0x1b, "[0m", 0
   lines_len equ $ - lines
@@ -23,6 +30,7 @@ section .data
   mem_info db 0x1b, "[34mMEM ", 0x1b, "[0m", 0
   mem_len equ $ - mem_info
   mem_proc db "/proc/meminfo", 0
+
 
   newline db '', 10; newline
   newline_len equ $ - newline
@@ -141,6 +149,40 @@ main:
   mov rsi, mem_buf
   syscall
 ;;;;;;;;;;;;;;;;;;;;;;;crazy magic ends here!;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;BAT;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  call print_arrow 
+  mov rax, 1
+  mov rdi, 1
+  mov rsi, bat
+  mov rdx, bat_len
+  syscall
+
+  mov rax, 2 
+  mov rdi, bat_proc
+  xor rsi, rsi
+  xor rdx, rdx
+  syscall ;; open()
+
+  mov rdi, rax ;; return value stored in rax probably idk it just works
+  xor rax, rax
+  mov rsi, bat_buf
+  mov rdx, 2
+  syscall ;; read()
+
+  mov rdx, rax
+  mov rax, 1 
+  mov rdi, 1 
+  mov rsi, bat_buf
+  syscall ;;write()
+
+  mov rax, 1
+  mov rdi, 1
+  mov rsi, percent
+  mov rdx, percent_len
+  syscall
+
+  call print_newline
   call print_lines
 
   call print_newline
