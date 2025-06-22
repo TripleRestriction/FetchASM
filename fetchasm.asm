@@ -4,7 +4,7 @@ section .bss
   buffer resb 124
   mem_buf resb 100
   ascii_buf resb 1024
-  bat_buf resb 2
+  bat_buf resb 3
 section .data
   sep db "|-> ", 0 ; 10 means new line and db means define byte, 0 means null terminator 
   sep_len equ $ - sep ; subtracts current pos from pos of msg to obtain length of string
@@ -167,7 +167,7 @@ main:
   mov rdi, rax ;; return value stored in rax probably idk it just works
   xor rax, rax
   mov rsi, bat_buf
-  mov rdx, 2
+  mov rdx, 3
   syscall ;; read()
 
   mov rdx, rax
@@ -176,13 +176,7 @@ main:
   mov rsi, bat_buf
   syscall ;;write()
 
-  mov rax, 1
-  mov rdi, 1
-  mov rsi, percent
-  mov rdx, percent_len
-  syscall
-
-  call print_newline
+;  call print_newline
   call print_lines
 
   call print_newline
